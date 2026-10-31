@@ -65,6 +65,16 @@ class ConversionTests(unittest.TestCase):
         self.assertNotIn(b'<script>', page)
         self.assertIn(b'&lt;img&gt;', page)
 
+    def test_asset_checksums(self):
+        import hashlib
+        import json
+        manifest = json.loads((ROOT / 'assets/SHA256.json').read_text(encoding='utf-8'))
+        for name, expected in manifest.items():
+            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), expected, name)
+
+    def test_preview_does_not_replace_user_words(self):
+        self.assertIn(b'>MAPPED SOURCE</pre>', preview_html('MAPPED SOURCE', 'SOURCE MAPPED'))
+
 
 if __name__ == '__main__':
     unittest.main()
